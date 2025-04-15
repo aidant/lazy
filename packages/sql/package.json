@@ -1,0 +1,15 @@
+{
+  "name": "@lazy/sql",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./lib/mod.d.ts",
+      "default": "./lib/mod.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest"
+  }
+}

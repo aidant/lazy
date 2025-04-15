@@ -1,0 +1,16 @@
+{
+  "name": "@lazy/config",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./tsconfig.json": {
+      "default": "./tsconfig.json"
+    },
+    "./tsconfig.build.json": {
+      "default": "./tsconfig.build.json"
+    },
+    "./tsconfig.test.json": {
+      "default": "./tsconfig.test.json"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@lazy/sqlite",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./node:sqlite": {
+      "types": "./lib/node.d.ts",
+      "default": "./lib/node.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest"
+  },
+  "peerDependenciesMeta": {
+    "@types/node": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@lazy/sql": "workspace:*"
+  },
+  "peerDependencies": {
+    "@types/node": "^22.5.0"
+  }
+}
