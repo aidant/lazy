@@ -9,7 +9,7 @@ export class SqlDialect extends Sql {
     this.#dialects = dialects
   }
 
-  override [toQueryInput](options: ToQueryInputOptions) {
+  override [toQueryInput](options: ToQueryInputOptions): void {
     this.#dialects[options.dialect]![toQueryInput](options)
   }
 }

@@ -1,9 +1,10 @@
-import './primitives/sql-primitive-ext.ts'
+import './atomics/sql-as.ts'
 
 import { sql } from './sql-fn.ts'
-import type { Sql as QueryInput } from './primitives/sql.ts'
-import { toSql, type SqlPrimitive as Sql } from './primitives/sql-primitive.ts'
-import type { SqlDialectName as Dialect } from './primitives/sql-dialect-types.ts'
+import { QueryInput } from './atomics/query-input.ts'
+import { toQueryInput, Sql } from './atomics/sql.ts'
+import type { Dialect } from './atomics/dialect.ts'
+import { MutableQueryInput } from './atomics/query-input.ts'
 
 interface Connection {
   (sql: Sql): Promise<any>
@@ -15,7 +16,13 @@ interface Options {
 }
 
 function preprocess(sql: Sql, options: Options): QueryInput {
-  return sql[toSql]({ dialect: options.dialect, values: new Map() })
+  const mutable = new MutableQueryInput()
+  sql[toQueryInput]({ dialect: options.dialect, query: mutable })
+  return new QueryInput(
+    mutable.text,
+    mutable.parametersByName,
+    mutable.parametersByPosition
+  )
 }
 
 function postprocess(_sql: Sql, _options: Options, _output: any): any {}

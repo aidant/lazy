@@ -1,5 +1,5 @@
 import { DIALECTS, type Dialect } from './dialect.ts'
-import { QueryInputBuilder, type QueryInput } from './query-input.ts'
+import { MutableQueryInput, QueryInput } from './query-input.ts'
 
 type Deletable<T> = { -readonly [P in keyof T]?: T[P] }
 
@@ -7,7 +7,7 @@ export const toQueryInput = Symbol.for('toQueryInput')
 
 export interface ToQueryInputOptions {
   readonly dialect: Dialect
-  readonly sql: QueryInputBuilder
+  readonly query: MutableQueryInput
 }
 
 export class Sql {
@@ -18,20 +18,26 @@ export class Sql {
     options: object,
     inspect: Function
   ) {
-    const builder = new QueryInputBuilder()
+    const mutable = new MutableQueryInput()
 
     this[toQueryInput]({
       dialect: Object.keys(DIALECTS)[0] as Dialect,
-      sql: builder,
+      query: mutable,
     })
 
-    const sql = builder.build()
+    const query = new QueryInput(
+      mutable.text,
+      mutable.parametersByName,
+      mutable.parametersByPosition
+    )
 
-    if (!sql.text) delete (sql as any).text
-    if (!sql.parametersByName)
-      delete (sql as Deletable<QueryInput>).parametersByName
-    if (!sql.parametersByPosition)
-      delete (sql as Deletable<QueryInput>).parametersByPosition
-    return inspect(sql, options)
+    if (!query.text) delete (query as Deletable<QueryInput>).text
+    if (!query.parametersByName)
+      delete (query as Deletable<QueryInput>).parametersByName
+    if (!query.parametersByPosition)
+      delete (query as Deletable<QueryInput>).parametersByPosition
+    return inspect(query, options)
   }
 }
+
+export const NO_SQL = new Sql()

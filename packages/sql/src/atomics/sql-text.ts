@@ -8,7 +8,7 @@ export class SqlText extends Sql {
     this.#text = text
   }
 
-  override [toQueryInput](options: ToQueryInputOptions) {
-    options.sql.addText(this.#text)
+  override [toQueryInput](options: ToQueryInputOptions): void {
+    options.query.text += this.#text
   }
 }
