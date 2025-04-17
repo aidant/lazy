@@ -1,13 +1,23 @@
-import './atomics/sql-as.ts'
+import { sql } from './sql-functions/sql.ts'
+import { QueryInput } from './sql-classes/query-input.ts'
+import { toQueryInput, Sql, toState } from './sql-classes/sql.ts'
+import { MutableQueryInput } from './sql-classes/query-input.ts'
+import type { Dialect } from './dialect.ts'
 
-import { sql } from './sql-fn.ts'
-import { QueryInput } from './atomics/query-input.ts'
-import { toQueryInput, Sql } from './atomics/sql.ts'
-import type { Dialect } from './atomics/dialect.ts'
-import { MutableQueryInput } from './atomics/query-input.ts'
+import './sql-functions/sql-as.ts'
+import './sql-functions/sql-bind.ts'
+import './sql-functions/sql-dialect.ts'
+import './sql-functions/sql-identifier.ts'
+import './sql-functions/sql-inspect.ts'
+import './sql-functions/sql-join.ts'
+import './sql-functions/sql-placeholder.ts'
+import './sql-functions/sql-placeholders.ts'
+import './sql-functions/sql-raw.ts'
+import './sql-functions/sql-value.ts'
+import './sql-functions/sql-values.ts'
 
 interface Connection {
-  (sql: Sql): Promise<any>
+  (sql: Sql): Promise<unknown>
   [Symbol.asyncDispose](): Promise<void>
 }
 
@@ -25,7 +35,9 @@ function preprocess(sql: Sql, options: Options): QueryInput {
   )
 }
 
-function postprocess(_sql: Sql, _options: Options, _output: any): any {}
+function postprocess(sql: Sql, options: Options, output: unknown): unknown {
+  const state = sql[toState](options, { deserializers: new Map() })
+}
 
 export {
   sql,

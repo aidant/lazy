@@ -1,7 +1,7 @@
 import { Sql, toQueryInput, type ToQueryInputOptions } from './sql.ts'
 
 export class SqlText extends Sql {
-  #text: string
+  readonly #text: string
 
   constructor(text: string) {
     super()

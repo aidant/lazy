@@ -1,9 +1,9 @@
-import { SqlFragments } from './sql-fragments.js'
-import { SqlIdentifier } from './sql-identifier.js'
-import { SqlText } from './sql-text.js'
-import { Sql } from './sql.ts'
+import { SqlFragments } from '../sql-classes/sql-fragments.ts'
+import { SqlIdentifier } from '../sql-classes/sql-identifier.ts'
+import { SqlText } from '../sql-classes/sql-text.ts'
+import { Sql } from '../sql-classes/sql.ts'
 
-declare module './sql.ts' {
+declare module '../sql-classes/sql.ts' {
   interface Sql {
     as(identifier: string | readonly [string, ...string[]]): Sql
   }
