@@ -1,0 +1,27 @@
+{
+  "name": "@lazy/di",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./lib/mod.d.ts",
+      "default": "./lib/mod.js"
+    },
+    "./async": {
+      "types": "./lib/async/mod.d.ts",
+      "default": "./lib/async/mod.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest"
+  },
+  "peerDependencies": {
+    "@types/node": "^22.14.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/node": {
+      "optional": true
+    }
+  }
+}

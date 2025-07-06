@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@lazy/config/tsconfig.build.json",
+  "references": [{ "path": "./tsconfig.build.json" }],
+  "include": ["${configDir}/src/async/**/*.ts"]
+}

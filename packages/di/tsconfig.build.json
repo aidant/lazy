@@ -1,0 +1,5 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@lazy/config/tsconfig.build.json",
+  "exclude": ["${configDir}/src/**/*.test.ts", "${configDir}/src/async/**/*.ts"]
+}
