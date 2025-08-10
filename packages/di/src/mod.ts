@@ -1,5 +1,15 @@
+export {
+  setContextProvider,
+  run,
+  type ContextProvider,
+} from './context-provider.ts'
+export { dependency, type Dependency } from './dependency.ts'
+export type {
+  ClassInjector,
+  ExistingInjector,
+  FactoryInjector,
+  ValueInjector,
+  Injector,
+} from './injector.ts'
 export { inject } from './inject.ts'
-export { useClass, useExisting, useFactory, useValue } from './provider.ts'
-export { run } from './run-sync.ts'
-export { token } from './token.ts'
-export { createContext } from './context.ts'
+export { createScope, type Scope } from './scope.ts'

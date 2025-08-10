@@ -1,8 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@lazy/config/tsconfig.test.json",
-  "references": [
-    { "path": "./tsconfig.build.json" },
-    { "path": "./tsconfig.build-async.json" }
-  ]
+  "references": [{ "path": "./tsconfig.build.json" }]
 }

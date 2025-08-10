@@ -1,41 +1,83 @@
-import { getContext } from './context.ts'
-import { toTokenDescriptor, type Token } from './token.ts'
+import { getScope } from './context-provider.ts'
+import { type Dependency, type DependencyDescriptor } from './dependency.ts'
+import type { InitializedScope } from './scope.ts'
+import { toDependencyDescriptor } from './util.ts'
 
-export interface InjectOptions<T> {
-  value?: T
+export function injectImpl<T>(
+  initializedScope: InitializedScope | undefined,
+  dependencyDescriptor: DependencyDescriptor<T>,
   factory?: () => T
-}
-
-export function inject<T>(token: Token<T>, options?: InjectOptions<T>): T {
-  const context = getContext()
-
-  const tokenDescriptor = toTokenDescriptor(token)
-
-  const result = context?.inject(tokenDescriptor)
+): { value: T } | undefined {
+  let result = initializedScope?.values.get(dependencyDescriptor)
 
   if (result) {
-    return result.value
+    return result
   }
 
-  if ('value' in tokenDescriptor) {
-    return tokenDescriptor.value
+  const injector = initializedScope?.injectors.get(dependencyDescriptor)
+
+  if (injector) {
+    if ('useValue' in injector) {
+      result = { value: injector.useValue }
+    } else if ('useFactory' in injector) {
+      result = { value: injector.useFactory() }
+    } else if ('useClass' in injector) {
+      result = { value: new injector.useClass() }
+    } else if ('useExisting' in injector) {
+      result = injectImpl(
+        initializedScope,
+        toDependencyDescriptor(injector.useExisting)
+      )
+    }
+
+    if (!result) {
+      return undefined
+    }
+
+    initializedScope!.values.set(dependencyDescriptor, result)
+    return result
   }
 
-  if (tokenDescriptor?.factory) {
-    const value = tokenDescriptor.factory()
-    tokenDescriptor.value = value
-    return value
+  if ('value' in dependencyDescriptor) {
+    result = { value: dependencyDescriptor.value }
+    initializedScope?.values.set(dependencyDescriptor, result)
+    return result
   }
 
-  if (options && 'value' in options) {
-    return options.value
+  if (dependencyDescriptor.factory) {
+    result = { value: dependencyDescriptor.factory() }
+    if (!initializedScope) {
+      dependencyDescriptor.value = result.value
+    }
+    initializedScope?.values.set(dependencyDescriptor, result)
+    return result
   }
 
-  if (options?.factory) {
-    return options.factory()
+  if (factory) {
+    result = { value: factory() }
+    return result
   }
 
-  throw new Error(
-    `The injection token "${tokenDescriptor.name}" is not provided`
+  return undefined
+}
+
+export function unwrapValue<T>(
+  dependencyDescriptor: DependencyDescriptor<T>,
+  result: { value: T } | undefined
+): T {
+  if (!result) {
+    throw new Error(
+      `The dependency "${dependencyDescriptor.name}" is not injected`
+    )
+  }
+
+  return result.value
+}
+
+export function inject<T>(dependency: Dependency<T>, factory?: () => T): T {
+  const dependencyDescriptor = toDependencyDescriptor(dependency)
+  return unwrapValue(
+    dependencyDescriptor,
+    injectImpl(getScope(), dependencyDescriptor, factory)
   )
 }
