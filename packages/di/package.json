@@ -7,9 +7,13 @@
       "types": "./lib/mod.d.ts",
       "default": "./lib/mod.js"
     },
+    "./async": {
+      "types": "./lib/context-provider-async.d.ts",
+      "default": "./lib/context-provider-async.js"
+    },
     "./async-local-storage": {
-      "types": "./lib/context-provider-async-local-storage.node.d.ts",
-      "default": "./lib/context-provider-async-local-storage.node.js"
+      "types": "./lib/context-provider-async-local-storage.d.ts",
+      "default": "./lib/context-provider-async-local-storage.js"
     }
   },
   "scripts": {

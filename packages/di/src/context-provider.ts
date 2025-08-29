@@ -1,5 +1,6 @@
 import { syncContextProvider } from './context-provider-sync.ts'
-import { InitializedScope, type Scope } from './scope.js'
+import type { InjectionContext } from './injector.ts'
+import type { Context } from './context.ts'
 
 export interface ContextProvider<T> {
   get(): T | undefined
@@ -12,10 +13,15 @@ export function setContextProvider(provider: ContextProvider<any>) {
   contextProvider = provider
 }
 
-export function run<R>(context: Scope, fn: () => R): R {
-  return contextProvider.run(context(InitializedScope as any), fn)
+export function run<TContext extends Context, R>(
+  context: InjectionContext<TContext>,
+  fn: () => R
+): R {
+  return contextProvider.run(context, fn)
 }
 
-export function getScope(): InitializedScope | undefined {
+export function getInjectionContext<TContext extends Context>():
+  | InjectionContext<TContext>
+  | undefined {
   return contextProvider.get()
 }

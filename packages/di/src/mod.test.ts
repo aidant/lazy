@@ -1,37 +1,24 @@
 import { test, expect } from 'vitest'
-import { createScope, dependency, run, inject } from './mod.ts'
+import { init, get, token, useValue, run } from './mod.ts'
 
-test('scope get dependency by name', () => {
+test('di', () => {
+  const Database = token<{ query: () => any }>('Database')
+
   const db = { query: () => {} }
-  const Database = dependency('Database', () => db)
-  const scope = createScope({ with: { db: Database } })
 
-  expect(scope.db).toEqual(scope.db)
-  expect(scope.db).toEqual({
-    query: expect.any(Function),
+  const injectionContext = init({
+    with: {
+      database: useValue(Database, db),
+    },
   })
-})
 
-test('scope get dependency by reference', () => {
-  const db = { query: () => {} }
-  const Database = dependency('Database', () => db)
-  const scope = createScope({ with: { db: Database } })
+  expect(injectionContext.context.database).toEqual(db)
 
-  expect(scope(Database)).toEqual(scope(Database))
-  expect(scope(Database)).toEqual({
-    query: expect.any(Function),
-  })
-})
+  expect(
+    run(injectionContext, () => {
+      const database = get(Database)
 
-test('run in scope', () => {
-  const db = { query: () => {} }
-  const Database = dependency('Database', () => db)
-  const scope = createScope({ with: { db: Database } })
-
-  run(scope, () => {
-    expect(inject(Database)).toEqual(inject(Database))
-    expect(inject(Database)).toEqual({
-      query: expect.any(Function),
+      expect(database).toEqual(db)
     })
-  })
+  )
 })

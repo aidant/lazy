@@ -1,6 +1,8 @@
 {
+  "$schema": "https://json.schemastore.org/prettierrc",
   "htmlWhitespaceSensitivity": "strict",
   "jsxSingleQuote": true,
+  "printWidth": 100,
   "semi": false,
   "singleAttributePerLine": true,
   "singleQuote": true,
