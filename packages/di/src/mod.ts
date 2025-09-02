@@ -20,7 +20,7 @@ export type Providers = TProviders
 export { run, setContextProvider, type ContextProvider } from './context-provider.ts'
 export { get } from './get.ts'
 export { init, type InitOptions } from './init.ts'
-export type { InjectorOptions } from './injector.ts'
+export type { InjectorResult } from './injector.ts'
 export {
   useClass,
   useClassWithArgs,

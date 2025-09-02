@@ -1,40 +1,54 @@
 import type { Injector } from './injector.ts'
 import type { Provider, Providers } from './provider.ts'
-import type { Simplify } from './utils.ts'
 
-export type Context = { [K in string]: unknown }
+export type Context = { [K in PropertyKey]: unknown }
+
+export type ContextFromProvidersImpl<
+  TProviders extends Providers<TProviders, TParentProviders>,
+  TParentProviders extends Providers<TParentProviders, {}>,
+> = {
+  [TPropertyKey in keyof TProviders]: Provider.Type<TProviders[TPropertyKey]>
+}
 
 export type ContextFromProviders<
-  TProviders extends Providers,
-  TParentProviders extends Providers,
-> = Simplify<
-  {
-    [TPropertyKey in keyof TProviders]: Provider.Type<TProviders[TPropertyKey]>
-  } & {
-    [TPropertyKey in keyof Omit<TParentProviders, keyof TProviders>]: Provider.Type<
-      TParentProviders[TPropertyKey]
-    >
-  }
->
+  TProviders extends Providers<TProviders, TParentProviders>,
+  TParentProviders extends Providers<TParentProviders, {}>,
+> = ContextFromProvidersImpl<TProviders, TParentProviders> &
+  Omit<ContextFromProvidersImpl<TParentProviders, {}>, keyof TProviders>
 
-export function createContext<TProviders extends Providers, TParentProviders extends Providers>(
+export function createContext<
+  TProviders extends Providers<TProviders, TParentProviders>,
+  TParentProviders extends Providers<TParentProviders, {}>,
+>(
   providers: TProviders,
   parentProviders: TParentProviders | undefined,
   injector: Injector<ContextFromProviders<TProviders, TParentProviders>>
 ): ContextFromProviders<TProviders, TParentProviders> {
   const properties = {} as {
-    [TPropertyKey in string]: TypedPropertyDescriptor<
+    [TPropertyKey in PropertyKey]: TypedPropertyDescriptor<
       ContextFromProviders<TProviders, TParentProviders>[TPropertyKey]
     >
   }
 
+  if (parentProviders) {
+    for (const [propertyKey, propertyDescriptor] of Object.entries(
+      Object.getOwnPropertyDescriptors(parentProviders)
+    )) {
+      properties[propertyKey] = {
+        enumerable: propertyDescriptor.enumerable ?? true,
+        configurable: propertyDescriptor.configurable ?? true,
+        get: () => injector.get(parentProviders[propertyKey]!.token).unwrap() as any,
+      }
+    }
+  }
+
   for (const [propertyKey, propertyDescriptor] of Object.entries(
-    Object.getOwnPropertyDescriptors(parentProviders || {})
-  ).concat(Object.entries(Object.getOwnPropertyDescriptors(providers)))) {
+    Object.getOwnPropertyDescriptors(providers)
+  )) {
     properties[propertyKey] = {
       enumerable: propertyDescriptor.enumerable ?? true,
       configurable: propertyDescriptor.configurable ?? true,
-      get: () => injector.get(providers[propertyKey]!.token) as any,
+      get: () => injector.get(providers[propertyKey]!.token).unwrap() as any,
     }
   }
 

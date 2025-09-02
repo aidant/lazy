@@ -16,7 +16,7 @@ test('di', () => {
 
   expect(
     run(injectionContext, () => {
-      const database = get(Database)
+      const database = get(Database).value!
 
       expect(database).toEqual(db)
     })
