@@ -7,6 +7,7 @@ export const toState = Symbol.for('toState')
 
 export interface ToQueryInputOptions {
   readonly dialect: Dialect
+  readonly parametersByName: boolean
   readonly query: MutableQueryInput
 }
 
@@ -21,12 +22,10 @@ export interface ToStateOptions {
 
 export interface State {}
 
-export class Sql {
-  [toQueryInput](_options: ToQueryInputOptions): void {}
+export abstract class Sql {
+  abstract [toQueryInput](_options: ToQueryInputOptions): void
   [reducer](_action: Action): Sql {
     return this
   }
   [toState](_options: ToStateOptions, _state: State): void {}
 }
-
-export const NO_SQL = new Sql()

@@ -47,7 +47,7 @@ export function useFactoryWithArgs<T, TArgs extends readonly [Token<unknown>, ..
     token,
     factory: (injectionContext) =>
       factory(
-        ...(args.map((token) => injectionContext.injector.get(token).unwrap()) as {
+        ...(args.map((token) => injectionContext.injector.get(token).value) as {
           [Index in keyof TArgs]: Token.Type<TArgs[Index]>
         })
       ),
@@ -88,7 +88,7 @@ export function useClassWithArgs<T, TArgs extends readonly [Token<unknown>, ...T
     token,
     factory: (injectionContext) =>
       new constructor(
-        ...(args.map((token) => injectionContext.injector.get(token).unwrap()) as {
+        ...(args.map((token) => injectionContext.injector.get(token).value) as {
           [Index in keyof TArgs]: Token.Type<TArgs[Index]>
         })
       ),

@@ -10,19 +10,23 @@ import {
 } from './provider.ts'
 import { init } from './init.ts'
 import { token } from './token.ts'
+import { run } from './context-provider.ts'
 
 test('useFactory', () => {
   const value = crypto.randomUUID()
   const Factory = token<string>()
   const factory = () => value
 
-  const { context } = init({
+  const injectionContext = init({
     with: {
       factory: useFactory(Factory, factory),
     },
   })
 
-  expect(context.factory).toEqual(value)
+  expect(injectionContext.context.factory).toEqual(value)
+  run(injectionContext, () => {
+    expect(Factory()).toEqual(value)
+  })
 })
 
 test('useFactoryWithContext', () => {
@@ -31,7 +35,7 @@ test('useFactoryWithContext', () => {
   const Factory = token<string>()
   const factory = ({ value }: { value: string }) => value
 
-  const { context } = init({
+  const injectionContext = init({
     with: {
       factoryWithContext: useFactoryWithContext(Factory, factory),
     },
@@ -42,7 +46,10 @@ test('useFactoryWithContext', () => {
     }),
   })
 
-  expect(context.factoryWithContext).toEqual(value)
+  expect(injectionContext.context.factoryWithContext).toEqual(value)
+  run(injectionContext, () => {
+    expect(Factory()).toEqual(value)
+  })
 })
 
 test('useFactoryWithArgs', () => {
@@ -51,7 +58,7 @@ test('useFactoryWithArgs', () => {
   const Factory = token<string>()
   const factory = (value: string) => value
 
-  const { context } = init({
+  const injectionContext = init({
     with: {
       factoryWithArgs: useFactoryWithArgs(Factory, factory, [Value]),
     },
@@ -62,20 +69,26 @@ test('useFactoryWithArgs', () => {
     }),
   })
 
-  expect(context.factoryWithArgs).toEqual(value)
+  expect(injectionContext.context.factoryWithArgs).toEqual(value)
+  run(injectionContext, () => {
+    expect(Factory()).toEqual(value)
+  })
 })
 
 test('useValue', () => {
   const Value = token<string>()
   const value = crypto.randomUUID()
 
-  const { context } = init({
+  const injectionContext = init({
     with: {
       value: useValue(Value, value),
     },
   })
 
-  expect(context.value).toEqual(value)
+  expect(injectionContext.context.value).toEqual(value)
+  run(injectionContext, () => {
+    expect(Value()).toEqual(value)
+  })
 })
 
 test('useClass', () => {
@@ -89,13 +102,16 @@ test('useClass', () => {
     }
   }
 
-  const { context } = init({
+  const injectionContext = init({
     with: {
       class: useClass(Class, ClassImpl),
     },
   })
 
-  expect(context.class.value).toEqual(value)
+  expect(injectionContext.context.class.value).toEqual(value)
+  run(injectionContext, () => {
+    expect(Class().value).toEqual(value)
+  })
 })
 
 test('useClassWithContext', () => {
@@ -110,7 +126,7 @@ test('useClassWithContext', () => {
     }
   }
 
-  const { context } = init({
+  const injectionContext = init({
     with: {
       classWithContext: useClassWithContext(Class, ClassImpl),
     },
@@ -121,7 +137,10 @@ test('useClassWithContext', () => {
     }),
   })
 
-  expect(context.classWithContext.value).toEqual(value)
+  expect(injectionContext.context.classWithContext.value).toEqual(value)
+  run(injectionContext, () => {
+    expect(Class().value).toEqual(value)
+  })
 })
 
 test('useFactoryWithArgs', () => {
@@ -136,7 +155,7 @@ test('useFactoryWithArgs', () => {
     }
   }
 
-  const { context } = init({
+  const injectionContext = init({
     with: {
       classWithArgs: useClassWithArgs(Class, ClassImpl, [Value]),
     },
@@ -147,5 +166,8 @@ test('useFactoryWithArgs', () => {
     }),
   })
 
-  expect(context.classWithArgs.value).toEqual(value)
+  expect(injectionContext.context.classWithArgs.value).toEqual(value)
+  run(injectionContext, () => {
+    expect(Class().value).toEqual(value)
+  })
 })

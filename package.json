@@ -4,11 +4,12 @@
     "build": "turbo build",
     "test": "vitest"
   },
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@10.11.0",
   "devDependencies": {
     "@lazy/config": "workspace:*",
     "prettier": "^3.5.3",
     "turbo": "^2.4.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }

@@ -12,11 +12,9 @@ export interface InjectionContext<TContext extends Context> {
 export type InjectorResult<T> =
   | {
       value: T
-      unwrap(): T
     }
   | {
       value?: never
-      unwrap(): T
     }
 
 declare const __injector_context__: unique symbol
@@ -58,17 +56,12 @@ export function createInjector<
     }
 
     if (!record) {
-      return {
-        unwrap: () => {
-          throw new Error(`Unable to get "${token.description}"`)
-        },
-      }
+      return {}
     }
 
     if ('value' in record) {
       return {
         value: record.value as T,
-        unwrap: () => record.value as T,
       }
     }
 
@@ -76,7 +69,6 @@ export function createInjector<
 
     return {
       value: record.value as T,
-      unwrap: () => record.value as T,
     }
   }
 

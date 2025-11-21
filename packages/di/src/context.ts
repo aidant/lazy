@@ -37,7 +37,7 @@ export function createContext<
       properties[propertyKey] = {
         enumerable: propertyDescriptor.enumerable ?? true,
         configurable: propertyDescriptor.configurable ?? true,
-        get: () => injector.get(parentProviders[propertyKey]!.token).unwrap() as any,
+        get: () => injector.get(parentProviders[propertyKey]!.token).value! as any,
       }
     }
   }
@@ -48,7 +48,7 @@ export function createContext<
     properties[propertyKey] = {
       enumerable: propertyDescriptor.enumerable ?? true,
       configurable: propertyDescriptor.configurable ?? true,
-      get: () => injector.get(providers[propertyKey]!.token).unwrap() as any,
+      get: () => injector.get(providers[propertyKey]!.token).value! as any,
     }
   }
 

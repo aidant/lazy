@@ -11,15 +11,38 @@ import {
 } from './sql.ts'
 
 export class SqlDialect extends Sql {
-  readonly #dialects: { readonly [TDialect in Dialect]: Sql }
+  static override(
+    self: SqlDialect,
+    dialects: { readonly [TDialect in Dialect]?: Sql } | undefined,
+    fallback?: Sql | undefined
+  ): SqlDialect {
+    return new SqlDialect(
+      dialects
+        ? {
+            mysql: dialects.mysql || self.#dialects.mysql,
+            postgres: dialects.postgres || self.#dialects.postgres,
+            snowflake: dialects.snowflake || self.#dialects.snowflake,
+            sqlite: dialects.sqlite || self.#dialects.sqlite,
+          }
+        : self.#dialects,
+      fallback || self.#fallback
+    )
+  }
 
-  constructor(dialects: { readonly [TDialect in Dialect]: Sql }) {
+  readonly #dialects: { readonly [TDialect in Dialect]: Sql | undefined }
+  readonly #fallback: Sql | undefined
+
+  constructor(
+    dialects: { readonly [TDialect in Dialect]: Sql | undefined },
+    fallback?: Sql | undefined
+  ) {
     super()
     this.#dialects = dialects
+    this.#fallback = fallback
   }
 
   override [toQueryInput](options: ToQueryInputOptions): void {
-    this.#dialects[options.dialect][toQueryInput](options)
+    ;(this.#dialects[options.dialect] || this.#fallback)?.[toQueryInput](options)
   }
 
   override [reducer](action: Action): Sql {
@@ -31,6 +54,6 @@ export class SqlDialect extends Sql {
   }
 
   override [toState](options: ToStateOptions, state: State): void {
-    this.#dialects[options.dialect][toState](options, state)
+    ;(this.#dialects[options.dialect] || this.#fallback)?.[toState](options, state)
   }
 }

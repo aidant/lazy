@@ -1,11 +1,5 @@
 import { ParameterNamePrefix, ParameterPositional } from '../dialect.ts'
-import {
-  reducer,
-  Sql,
-  toQueryInput,
-  type Action,
-  type ToQueryInputOptions,
-} from './sql.ts'
+import { reducer, Sql, toQueryInput, type Action, type ToQueryInputOptions } from './sql.ts'
 
 type Serializer = (value: unknown) => unknown
 
@@ -41,7 +35,7 @@ export class SqlValue extends Sql {
     const parameterNamePrefix = ParameterNamePrefix[options.dialect]
     const parameterPositional = ParameterPositional[options.dialect]
 
-    if (this.#name && parameterNamePrefix) {
+    if (this.#name && parameterNamePrefix && options.parametersByName !== false) {
       options.query.text += parameterNamePrefix + this.#name
       options.query.parametersByName ||= {}
       options.query.parametersByName[this.#name] = this.#value
@@ -54,20 +48,14 @@ export class SqlValue extends Sql {
 
   override [reducer](action: Action): Sql {
     if (action.type === 'bind' && this.#name && this.#name in action.payload) {
-      return new SqlValue(
-        this.#name,
-        action.payload[this.#name],
-        this.#serializers
-      )
+      return new SqlValue(this.#name, action.payload[this.#name], this.#serializers)
     }
 
     if (action.type === 'serialize') {
       return new SqlValue(
         this.#name,
         this.#value,
-        this.#serializers
-          ? [...this.#serializers, action.payload]
-          : [action.payload]
+        this.#serializers ? [...this.#serializers, action.payload] : [action.payload]
       )
     }
 

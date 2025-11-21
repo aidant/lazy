@@ -1,4 +1,4 @@
-import { Quote } from '../dialect.ts'
+import { IdentifierQuote } from '../dialect.ts'
 import {
   reducer,
   Sql,
@@ -10,41 +10,32 @@ import {
   type ToStateOptions,
 } from './sql.ts'
 
-type Deserializer = (value: unknown) => unknown
+export type Deserializer = (value: unknown) => unknown
 
 declare module './sql.ts' {
   interface Actions {
     deserialize: Deserializer
   }
   interface State {
-    deserializers: Map<
-      readonly [string, ...string[]],
-      readonly [Deserializer, ...Deserializer[]]
-    >
+    deserializers: Map<readonly [string, ...string[]], readonly [Deserializer, ...Deserializer[]]>
   }
 }
 
 export class SqlIdentifier extends Sql {
   readonly #identifier: readonly [string, ...string[]]
-  readonly #deserializers:
-    | readonly [Deserializer, ...Deserializer[]]
-    | undefined
+  readonly #deserializers: readonly [Deserializer, ...Deserializer[]] | undefined
 
   constructor(
     identifier: string | readonly [string, ...string[]],
-    deserializers?:
-      | readonly [Deserializer, ...Deserializer[]]
-      | undefined
-      | null
+    deserializers?: readonly [Deserializer, ...Deserializer[]] | undefined | null
   ) {
     super()
-    this.#identifier =
-      typeof identifier === 'string' ? [identifier] : identifier
+    this.#identifier = typeof identifier === 'string' ? [identifier] : identifier
     this.#deserializers = deserializers || undefined
   }
 
   override [toQueryInput](options: ToQueryInputOptions): void {
-    const quote = Quote[options.dialect]
+    const quote = IdentifierQuote[options.dialect]
 
     for (let index = 0; index < this.#identifier.length; index++) {
       const identifier = this.#identifier[index]!
@@ -52,8 +43,7 @@ export class SqlIdentifier extends Sql {
       if (index !== 0) options.query.text += '.'
 
       if (identifier.includes(quote)) {
-        options.query.text +=
-          quote + identifier.replaceAll(quote, quote + quote) + quote
+        options.query.text += quote + identifier.replaceAll(quote, quote + quote) + quote
       } else {
         options.query.text += quote + identifier + quote
       }
@@ -64,9 +54,7 @@ export class SqlIdentifier extends Sql {
     if (action.type === 'deserialize') {
       return new SqlIdentifier(
         this.#identifier,
-        this.#deserializers
-          ? [...this.#deserializers, action.payload]
-          : [action.payload]
+        this.#deserializers ? [...this.#deserializers, action.payload] : [action.payload]
       )
     }
 

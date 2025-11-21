@@ -19,5 +19,3 @@ export class QueryInput {
     this.parametersByPosition = parametersByPosition || undefined
   }
 }
-
-export const NO_QUERY_INPUT = new QueryInput('')

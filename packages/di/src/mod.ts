@@ -18,7 +18,6 @@ export const Providers = ProvidersImpl
 export type Providers = TProviders
 
 export { run, setContextProvider, type ContextProvider } from './context-provider.ts'
-export { get } from './get.ts'
 export { init, type InitOptions } from './init.ts'
 export type { InjectorResult } from './injector.ts'
 export {
@@ -30,4 +29,4 @@ export {
   useFactoryWithContext,
   useValue,
 } from './provider.ts'
-export { token, type Token } from './token.ts'
+export { token, type Token, type Dependency } from './token.ts'

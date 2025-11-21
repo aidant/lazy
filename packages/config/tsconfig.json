@@ -9,7 +9,7 @@
     "esModuleInterop": false,
     "exactOptionalPropertyTypes": true,
     "incremental": true,
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "ESNext.AsyncIterable"],
     "libReplacement": false,
     "module": "NodeNext",
     "moduleResolution": "nodenext",

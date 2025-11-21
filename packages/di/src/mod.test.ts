@@ -1,5 +1,5 @@
 import { test, expect } from 'vitest'
-import { init, get, token, useValue, run } from './mod.ts'
+import { init, token, useValue, run } from './mod.ts'
 
 test('di', () => {
   const Database = token<{ query: () => any }>('Database')
@@ -16,7 +16,7 @@ test('di', () => {
 
   expect(
     run(injectionContext, () => {
-      const database = get(Database).value!
+      const database = Database()
 
       expect(database).toEqual(db)
     })
